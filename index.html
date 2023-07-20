@@ -1,5 +1,8 @@
+Mis disculpas nuevamente por los errores. Aquí tienes el código completo con las llaves de cierre correctas y los comentarios en español:
+
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -16,79 +19,48 @@
             <h1>Photo Uploader</h1>
         </header>
         <body>
-            <div class="button" id="take-photo-button">Tomar foto</div>
+            <div class="button" id="choose-photo-button">Seleccionar foto</div>
+            <input type="file" accept="image/*" id="photo-input" style="display: none;">
             <div class="modal" id="upload-modal">
                 <div class="modal-content">
-                    <input type="text" id="photo-name" placeholder="Photo Name">
+                    <input type="text" id="photo-name" placeholder="Nombre de la foto">
                     <button id="upload-photo-button">Subir foto</button>
                 </div>
             </div>
             <ul class="list" id="photos-list"></ul>
         </body>
         <footer>
-            <div class="button" id="download-today-photos-button" onclick="downloadPhotos()">Descargar fotos de hoy</div>
+            <div class="button" id="download-today-photos-button" onclick="descargarFotosHoy()">Descargar fotos de hoy</div>
             <div class="button" id="download-all-photos-button">Descargar todas las fotos</div>
         </footer>
     </div>
-    <video id="video-preview" style="display: none;"></video>
     <canvas id="photo-canvas" style="display: none;"></canvas>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-        // JavaScript code for taking and uploading photos
+        // JavaScript para cargar y descargar fotos
 
-        // Global variables
+        // Variables globales
         var photoList = [];
-        var videoStream = null;
 
-        // Function to access the camera and show the video preview
-        function showVideoPreview() {
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-                .then(function (stream) {
-                    // Store the video stream for later use (to stop it when necessary)
-                    videoStream = stream;
+        // Función para manejar el cambio de entrada de archivo
+        document.getElementById("photo-input").addEventListener("change", function (event) {
+            var file = event.target.files[0];
+            var fileReader = new FileReader();
 
-                    // Create a video element
-                    var video = document.getElementById("video-preview");
-                    video.srcObject = stream;
-                    video.style.display = "block";
+            fileReader.onload = function () {
+                var photoData = fileReader.result;
+                // Guardar los datos de la foto en la lista de fotos
+                photoList.push(photoData);
+                // Actualizar la lista de fotos
+                actualizarListaFotos();
+            };
 
-                    // Play the video
-                    video.play();
-                })
-                .catch(function (error) {
-                    console.error("Error accessing the camera: ", error);
-                });
-        }
+            fileReader.readAsDataURL(file);
+        });
 
-        // Function to take a photo
-        function takePhoto() {
-            // Get the video element
-            var video = document.getElementById("video-preview");
-
-            // Create a canvas element with the same dimensions as the video
-            var canvas = document.getElementById("photo-canvas");
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            // Create a context
-            var ctx = canvas.getContext("2d");
-
-            // Draw the current frame of the video to the canvas
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Get the image data
-            var imageData = canvas.toDataURL("image/png");
-
-            // Save the image data to the photo list
-            photoList.push(imageData);
-
-            // Update the photos list
-            updatePhotosList();
-        }
-
-        // Function to update the photos list
-        function updatePhotosList() {
+        // Función para actualizar la lista de fotos
+        function actualizarListaFotos() {
             var photosList = document.getElementById("photos-list");
             photosList.innerHTML = "";
 
@@ -104,82 +76,82 @@
             }
         }
 
-        // Function to upload a photo
-        function uploadPhoto(photoData, photoName) {
-            // You need to implement the server-side code to handle photo uploads.
-            // Here, we're just simulating a successful upload.
+        // Función para subir una foto
+        function subirFoto(photoData, photoName) {
+            // Aquí deberías implementar el código en el servidor para manejar la subida de fotos.
+            // En este ejemplo, simulamos una subida exitosa.
 
-            // Simulate the upload process
+            // Simular el proceso de subida
             setTimeout(function () {
-                alert("The photo has been uploaded successfully.");
+                alert("La foto se ha subido correctamente.");
             }, 1000);
         }
 
-        // Function to handle the "Upload Photo" button click
+        // Función para manejar el clic del botón "Subir foto"
         document.getElementById("upload-photo-button").addEventListener("click", function () {
             var photoNameInput = document.getElementById("photo-name");
             var photoName = photoNameInput.value.trim();
             if (photoName === "") {
-                alert("Please enter a photo name.");
+                alert("Por favor, ingresa un nombre para la foto.");
                 return;
             }
 
             var canvas = document.getElementById("photo-canvas");
             var photoData = canvas.toDataURL("image/png");
 
-            // Upload the photo
-            uploadPhoto(photoData, photoName);
+            // Subir la foto
+            subirFoto(photoData, photoName);
 
-            // Clear the photo name input
+            // Limpiar el campo del nombre de la foto
             photoNameInput.value = "";
 
-            // Hide the modal
+            // Ocultar el modal
             var uploadModal = document.getElementById("upload-modal");
             uploadModal.style.display = "none";
         });
 
-        // Function to handle the "Download Today's Photos" button click
-        function downloadPhotos() {
-            // Get today's date
+        // Función para manejar el clic del botón "Descargar fotos de hoy"
+        function descargarFotosHoy() {
+            // Obtener la fecha de hoy
             var today = new Date();
 
-            // Create a folder name with the format YYYYMMDD
+            // Crear un nombre de carpeta con el formato AAAAMMDD
             var folderName = today.getFullYear().toString() +
                              (today.getMonth() + 1).toString().padStart(2, '0') +
                              today.getDate().toString().padStart(2, '0');
 
-            // Create a temporary anchor element to trigger the download
+            // Crear un elemento de anclaje temporal para activar la descarga
             var downloadLink = document.createElement('a');
             downloadLink.style.display = 'none';
 
-            // Append the anchor to the body
+            // Agregar el anclaje al cuerpo del documento
             document.body.appendChild(downloadLink);
 
-            // Loop through the photos and trigger the download for each one
+            // Recorrer las fotos y activar la descarga de cada una
             for (var i = 0; i < photoList.length; i++) {
-                // Create an anchor element for each photo
+                // Crear un elemento de anclaje para cada foto
                 var photoLink = document.createElement('a');
                 photoLink.href = photoList[i];
-                photoLink.download = folderName + '/photo_' + (i + 1) + '.png';
+                photoLink.download = folderName + '/foto_' + (i + 1) + '.png';
 
-                // Append the photo link to the temporary anchor
+                // Agregar el enlace de la foto al anclaje temporal
                 downloadLink.appendChild(photoLink);
 
-                // Simulate a click on the photo link to trigger the download
+                // Simular un clic en el enlace de la foto para activar la descarga
                 photoLink.click();
 
-                // Remove the photo link from the temporary anchor
+                // Eliminar el enlace de la foto del anclaje temporal
                 downloadLink.removeChild(photoLink);
             }
 
-            // Remove the temporary anchor from the body
+            // Eliminar el anclaje temporal del cuerpo del documento
             document.body.removeChild(downloadLink);
         }
 
-        // Event listener for the "Take Photo" button click
-        document.getElementById("take-photo-button").addEventListener("click", function () {
-            // Show the video preview and allow the user to take a photo
-            showVideoPreview();
+        // Evento para el clic del botón "Seleccionar foto"
+        document.getElementById("choose-photo-button").addEventListener("click", function () {
+            var fileInput = document.getElementById("photo-input");
+            fileInput.click();
         });
 
     </script>
