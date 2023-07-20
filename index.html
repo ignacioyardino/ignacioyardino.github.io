@@ -1,47 +1,76 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Uploader</title>
+    <title>Photo Drop</title>
     <style>
         body {
-            font-family: "Roboto", sans-serif;
+            font-family: "Arial", sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f0f0f0;
         }
 
         .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .header {
-            margin: 10px;
+        .container header {
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        .body {
-            margin: 10px;
-        }
-
-        .footer {
-            margin: 10px;
+        .container h1 {
+            color: #333;
         }
 
         .button {
             display: block;
             width: 100%;
             height: 40px;
-            background-color: #000;
+            background-color: #007bff;
             color: #fff;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
             line-height: 40px;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .list {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-item img {
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .modal {
@@ -56,62 +85,41 @@
 
         .modal-content {
             width: 300px;
-            height: 100px;
+            height: 150px;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background-color: #fff;
             padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .list {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .list-item {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 10px;
-            overflow: hidden;
-        }
-
-        .list-item img {
-            max-width: 100%;
-            max-height: 100%;
-            display: block;
-            transition: transform 0.2s;
-        }
-
-        .list-item button {
-            display: none;
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            width: 70px;
+        .modal-content input {
+            width: 100%;
             height: 30px;
-            background-color: #000;
+            padding: 5px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            margin-bottom: 10px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            height: 30px;
+            background-color: #007bff;
             color: #fff;
             font-size: 14px;
             font-weight: 700;
             cursor: pointer;
+            border: none;
+            border-radius: 5px;
         }
 
-        .list-item:hover img {
-            transform: scale(1.1);
-        }
-
-        .list-item:hover button {
-            display: block;
-        }
-
-        .selected {
-            border: 3px solid #f00;
+        .modal-content button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -121,83 +129,49 @@
         <header>
             <h1>Photo Uploader</h1>
         </header>
-        <div class="body">
-            <div class="button" id="take-photo-button">Take Photo</div>
+        <body>
+            <div class="button" id="choose-photo-button">Seleccionar foto</div>
             <input type="file" accept="image/*" id="photo-input" style="display: none;">
             <div class="modal" id="upload-modal">
                 <div class="modal-content">
-                    <input type="text" id="photo-name" placeholder="Photo Name">
-                    <button id="upload-photo-button">Upload Photo</button>
+                    <input type="text" id="photo-name" placeholder="Nombre de la foto">
+                    <button id="upload-photo-button">Subir foto</button>
                 </div>
             </div>
             <ul class="list" id="photos-list"></ul>
-            <div class="button" id="download-selected-button" style="display: none;">Download Selected</div>
-            <div class="button" id="download-today-photos-button">Download Today's Photos</div>
-        </div>
+        </body>
         <footer>
-            <div class="button" id="download-all-photos-button">Download All Photos</div>
+            <div class="button" id="download-today-photos-button" onclick="descargarFotosHoy()">Descargar fotos de hoy</div>
+            <div class="button" id="download-all-photos-button">Descargar todas las fotos</div>
         </footer>
     </div>
     <canvas id="photo-canvas" style="display: none;"></canvas>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-        // JavaScript code for taking and uploading photos
+        // JavaScript para cargar y descargar fotos
 
-        // Global variables
+        // Variables globales
         var photoList = [];
-        var selectedPhotos = [];
 
-        // Function to take a photo
-        function takePhoto() {
-            // Get the camera
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function (stream) {
-                    // Create a video element
-                    var video = document.createElement("video");
-                    video.srcObject = stream;
-                    video.style.display = "none";
-                    document.body.appendChild(video);
+        // Función para manejar el cambio de entrada de archivo
+        document.getElementById("photo-input").addEventListener("change", function (event) {
+            var file = event.target.files[0];
+            var fileReader = new FileReader();
 
-                    // Wait for the video to load
-                    video.onloadedmetadata = function () {
-                        // Get the video width and height
-                        var width = video.videoWidth;
-                        var height = video.videoHeight;
+            fileReader.onload = function () {
+                var photoData = fileReader.result;
+                // Guardar los datos de la foto en la lista de fotos
+                photoList.push(photoData);
+                // Actualizar la lista de fotos
+                actualizarListaFotos();
+            };
 
-                        // Create a canvas element
-                        var canvas = document.getElementById("photo-canvas");
-                        canvas.width = width;
-                        canvas.height = height;
+            fileReader.readAsDataURL(file);
+        });
 
-                        // Create a context
-                        var ctx = canvas.getContext("2d");
-
-                        // Draw the video to the canvas
-                        ctx.drawImage(video, 0, 0, width, height);
-
-                        // Get the image data
-                        var imageData = canvas.toDataURL("image/png");
-
-                        // Save the image data to the photo list
-                        photoList.push(imageData);
-
-                        // Close the camera stream
-                        stream.getTracks().forEach(function (track) {
-                            track.stop();
-                        });
-
-                        // Update the photos list
-                        updatePhotosList();
-                    };
-                })
-                .catch(function (error) {
-                    console.error("Error accessing the camera: ", error);
-                });
-        }
-
-        // Function to update the photos list
-        function updatePhotosList() {
+        // Función para actualizar la lista de fotos
+        function actualizarListaFotos() {
             var photosList = document.getElementById("photos-list");
             photosList.innerHTML = "";
 
@@ -209,143 +183,88 @@
                 img.src = photoList[i];
                 listItem.appendChild(img);
 
-                var button = document.createElement("button");
-                button.textContent = "Guardar";
-                button.addEventListener("click", function (index) {
-                    return function () {
-                        // Get the photo data to upload
-                        var photoData = photoList[index];
-                        var photoNameInput = document.getElementById("photo-name");
-                        var photoName = photoNameInput.value.trim();
-                        if (photoName === "") {
-                            alert("Please enter a photo name.");
-                            return;
-                        }
-
-                        // Upload the photo
-                        uploadPhoto(photoData, photoName);
-
-                        // Clear the photo name input
-                        photoNameInput.value = "";
-
-                        // Remove the photo from the list after uploading
-                        photoList.splice(index, 1);
-
-                        // Update the photos list
-                        updatePhotosList();
-
-                        // Hide the modal
-                        var uploadModal = document.getElementById("upload-modal");
-                        uploadModal.style.display = "none";
-                    };
-                }(i));
-
-                listItem.appendChild(button);
-
                 photosList.appendChild(listItem);
-            }
-
-            // Add click event listener to photos for selection
-            var photos = photosList.getElementsByTagName("li");
-            for (var i = 0; i < photos.length; i++) {
-                photos[i].addEventListener("click", function (index) {
-                    return function () {
-                        var photo = photos[index];
-                        photo.classList.toggle("selected");
-
-                        if (photo.classList.contains("selected")) {
-                            selectedPhotos.push(photoList[index]);
-                        } else {
-                            var selectedIndex = selectedPhotos.indexOf(photoList[index]);
-                            if (selectedIndex !== -1) {
-                                selectedPhotos.splice(selectedIndex, 1);
-                            }
-                        }
-
-                        if (selectedPhotos.length > 0) {
-                            document.getElementById("download-selected-button").style.display = "block";
-                        } else {
-                            document.getElementById("download-selected-button").style.display = "none";
-                        }
-                    };
-                }(i));
             }
         }
 
-        // Function to upload a photo
-        function uploadPhoto(photoData, photoName) {
-            // You need to implement the server-side code to handle photo uploads.
-            // Here, we're just simulating a successful upload.
+        // Función para subir una foto
+        function subirFoto(photoData, photoName) {
+            // Aquí deberías implementar el código en el servidor para manejar la subida de fotos.
+            // En este ejemplo, simulamos una subida exitosa.
 
-            // Simulate the upload process
+            // Simular el proceso de subida
             setTimeout(function () {
-                alert("The photo has been uploaded successfully with the name: " + photoName);
+                alert("La foto se ha subido correctamente.");
             }, 1000);
         }
 
-        // Function to handle the "Take Photo" button click
-        document.getElementById("take-photo-button").addEventListener("click", takePhoto);
+        // Función para manejar el clic del botón "Subir foto"
+        document.getElementById("upload-photo-button").addEventListener("click", function () {
+            var photoNameInput = document.getElementById("photo-name");
+            var photoName = photoNameInput.value.trim();
+            if (photoName === "") {
+                alert("Por favor, ingresa un nombre para la foto.");
+                return;
+            }
 
-        // Function to handle the "Choose Photo" button click
+            var canvas = document.getElementById("photo-canvas");
+            var photoData = canvas.toDataURL("image/png");
+
+            // Subir la foto
+            subirFoto(photoData, photoName);
+
+            // Limpiar el campo del nombre de la foto
+            photoNameInput.value = "";
+
+            // Ocultar el modal
+            var uploadModal = document.getElementById("upload-modal");
+            uploadModal.style.display = "none";
+        });
+
+        // Función para manejar el clic del botón "Descargar fotos de hoy"
+        function descargarFotosHoy() {
+            // Obtener la fecha de hoy
+            var today = new Date();
+
+            // Crear un nombre de carpeta con el formato AAAAMMDD
+            var folderName = today.getFullYear().toString() +
+                             (today.getMonth() + 1).toString().padStart(2, '0') +
+                             today.getDate().toString().padStart(2, '0');
+
+            // Crear un elemento de anclaje temporal para activar la descarga
+            var downloadLink = document.createElement('a');
+            downloadLink.style.display = 'none';
+
+            // Agregar el anclaje al cuerpo del documento
+            document.body.appendChild(downloadLink);
+
+            // Recorrer las fotos y activar la descarga de cada una
+            for (var i = 0; i < photoList.length; i++) {
+                // Crear un elemento de anclaje para cada foto
+                var photoLink = document.createElement('a');
+                photoLink.href = photoList[i];
+                photoLink.download = folderName + '/foto_' + (i + 1) + '.png';
+
+                // Agregar el enlace de la foto al anclaje temporal
+                downloadLink.appendChild(photoLink);
+
+                // Simular un clic en el enlace de la foto para activar la descarga
+                photoLink.click();
+
+                // Eliminar el enlace de la foto del anclaje temporal
+                downloadLink.removeChild(photoLink);
+            }
+
+            // Eliminar el anclaje temporal del cuerpo del documento
+            document.body.removeChild(downloadLink);
+        }
+
+        // Evento para el clic del botón "Seleccionar foto"
         document.getElementById("choose-photo-button").addEventListener("click", function () {
             var fileInput = document.getElementById("photo-input");
             fileInput.click();
         });
 
-        // Function to handle the file input change
-        document.getElementById("photo-input").addEventListener("change", function (event) {
-            var file = event.target.files[0];
-            var fileReader = new FileReader();
-
-            fileReader.onload = function () {
-                var photoData = fileReader.result;
-                // Save the photo data to the photo list
-                photoList.push(photoData);
-                // Update the photos list
-                updatePhotosList();
-            };
-
-            fileReader.readAsDataURL(file);
-        });
-
-        // Function to handle the "Download Today's Photos" button click
-        document.getElementById("download-today-photos-button").addEventListener("click", function () {
-            // Get the today's date
-            var today = new Date();
-
-            // Create a query string
-            var queryString = "?date=" + today.toISOString();
-
-            // Redirect to the download page
-            window.location.href = "/download" + queryString;
-        });
-
-        // Function to handle the "Download All Photos" button click
-        document.getElementById("download-all-photos-button").addEventListener("click", function () {
-            // Redirect to the download page
-            window.location.href = "/download";
-        });
-
-        // Function to handle the "Download Selected" button click
-        document.getElementById("download-selected-button").addEventListener("click", function () {
-            if (selectedPhotos.length > 0) {
-                // You need to implement the server-side code to handle the download of selected photos.
-                // Here, we're just simulating the process by opening the selected photos in new tabs.
-
-                selectedPhotos.forEach(function (photoData) {
-                    var newTab = window.open();
-                    newTab.document.write("<html><body><img src='" + photoData + "' /></body></html>");
-                });
-
-                // Clear the selection
-                selectedPhotos = [];
-                document.getElementById("download-selected-button").style.display = "none";
-                var selectedPhotosElements = document.querySelectorAll(".selected");
-                selectedPhotosElements.forEach(function (photo) {
-                    photo.classList.remove("selected");
-                });
-            }
-        });
     </script>
 </body>
 
