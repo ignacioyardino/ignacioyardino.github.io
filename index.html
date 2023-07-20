@@ -1,6 +1,3 @@
-Mis disculpas por las confusiones anteriores. Aquí tienes el código completo del `index.html` con todas las etiquetas y llaves de cierre correctamente:
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -13,13 +10,23 @@ Mis disculpas por las confusiones anteriores. Aquí tienes el código completo d
             font-family: "Roboto", sans-serif;
             margin: 0;
             padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f3f3f3;
+            color: #000;
+        }
+
+        body.dark-mode {
+            background-color: #222;
+            color: #fff;
         }
 
         .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
         }
 
         header {
@@ -118,13 +125,87 @@ Mis disculpas por las confusiones anteriores. Aquí tienes el código completo d
         .list-item button:hover {
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
         }
+
+        h1 {
+            font-size: 36px;
+            color: #4CAF50;
+            text-shadow: 2px 2px #f3f3f3;
+        }
+
+        /* Estilos específicos para el switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            border-radius: 34px;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #4CAF50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Estilos adicionales para el switch en modo oscuro */
+        .dark-mode .slider {
+            background-color: #555;
+        }
+
+        .dark-mode input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        .dark-mode input:checked + .slider:before {
+            background-color: #fff;
+        }
     </style>
 </head>
 
-<body>
+<body class="light-mode">
     <div class="container">
         <header>
-            <h1>Photo Uploader</h1>
+            <h1>¡Bienvenido a Photo Drop!</h1>
+            <!-- Switch para cambiar entre tema claro y oscuro -->
+            <label class="switch">
+                <input type="checkbox" id="theme-switch">
+                <span class="slider"></span>
+            </label>
         </header>
         <div class="body">
             <button class="button" id="choose-photo-button">Seleccionar foto</button>
@@ -146,128 +227,15 @@ Mis disculpas por las confusiones anteriores. Aquí tienes el código completo d
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
-        // JavaScript para cargar y descargar fotos
+        // JavaScript code para tomar y subir fotos ...)
 
-        // Variables globales
-        var photoList = [];
-
-        // Función para manejar el cambio de entrada de archivo
-        document.getElementById
-
-("photo-input").addEventListener("change", function (event) {
-            var file = event.target.files[0];
-            var fileReader = new FileReader();
-
-            fileReader.onload = function () {
-                var photoData = fileReader.result;
-                // Guardar los datos de la foto en la lista de fotos
-                photoList.push(photoData);
-                // Actualizar la lista de fotos
-                actualizarListaFotos();
-            };
-
-            fileReader.readAsDataURL(file);
+        // Agregar funcionalidad para el switch de tema claro/oscuro
+        $(document).ready(function () {
+            $("#theme-switch").change(function () {
+                $("body").toggleClass("dark-mode");
+            });
         });
-
-        // Función para actualizar la lista de fotos
-        function actualizarListaFotos() {
-            var photosList = document.getElementById("photos-list");
-            photosList.innerHTML = "";
-
-            for (var i = 0; i < photoList.length; i++) {
-                var listItem = document.createElement("li");
-                listItem.classList.add("list-item");
-
-                var img = document.createElement("img");
-                img.src = photoList[i];
-                listItem.appendChild(img);
-
-                photosList.appendChild(listItem);
-            }
-        }
-
-        // Función para subir una foto
-        function subirFoto(photoData, photoName) {
-            // Aquí deberías implementar el código en el servidor para manejar la subida de fotos.
-            // En este ejemplo, simulamos una subida exitosa.
-
-            // Simular el proceso de subida
-            setTimeout(function () {
-                alert("La foto se ha subido correctamente.");
-            }, 1000);
-        }
-
-        // Función para manejar el clic del botón "Subir foto"
-        document.getElementById("upload-photo-button").addEventListener("click", function () {
-            var photoNameInput = document.getElementById("photo-name");
-            var photoName = photoNameInput.value.trim();
-            if (photoName === "") {
-                alert("Por favor, ingresa un nombre para la foto.");
-                return;
-            }
-
-            var canvas = document.getElementById("photo-canvas");
-            var photoData = canvas.toDataURL("image/png");
-
-            // Subir la foto
-            subirFoto(photoData, photoName);
-
-            // Limpiar el campo del nombre de la foto
-            photoNameInput.value = "";
-
-            // Ocultar el modal
-            var uploadModal = document.getElementById("upload-modal");
-            uploadModal.style.display = "none";
-        });
-
-        // Función para manejar el clic del botón "Descargar fotos de hoy"
-        function descargarFotosHoy() {
-            // Obtener la fecha de hoy
-            var today = new Date();
-
-            // Crear un nombre de carpeta con el formato AAAAMMDD
-            var folderName = today.getFullYear().toString() +
-                (today.getMonth() + 1).toString().padStart(2, '0') +
-                today.getDate().toString().padStart(2, '0');
-
-            // Crear un elemento de anclaje temporal para activar la descarga
-            var downloadLink = document.createElement('a');
-            downloadLink.style.display = 'none';
-
-            // Agregar el anclaje al cuerpo del documento
-            document.body.appendChild(downloadLink);
-
-            // Recorrer las fotos y activar la descarga de cada una
-            for (var i = 0; i < photoList.length; i++) {
-                // Crear un elemento de anclaje para cada foto
-                var photoLink = document.createElement('a');
-                photoLink.href = photoList[i];
-                photoLink.download = folderName + '/foto_' + (i + 1) + '.png';
-
-                // Agregar el enlace de la foto al anclaje temporal
-                downloadLink.appendChild(photoLink);
-
-                // Simular un clic en el enlace de la foto para activar la descarga
-                photoLink.click();
-
-                // Eliminar el enlace de la foto del anclaje temporal
-                downloadLink.removeChild(photoLink);
-            }
-
-            // Eliminar el anclaje temporal del cuerpo del documento
-            document.body.removeChild(downloadLink);
-        }
-
-        // Evento para el clic del botón "Seleccionar foto"
-        document.getElementById("choose-photo-button").addEventListener("click", function () {
-            var fileInput = document.getElementById("photo-input");
-            fileInput.click();
-        });
-
     </script>
 </body>
 
 </html>
-```
-
-Ahora debería estar completo y sin errores. Si tienes alguna otra duda o necesitas más ayuda, no dudes en decirme.
