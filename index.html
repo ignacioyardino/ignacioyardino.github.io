@@ -104,10 +104,79 @@
             }
         }
 
-        // Resto del código JavaScript, incluyendo la función para subir fotos y descargar fotos
-        // ...
+        // Function to upload a photo
+        function uploadPhoto(photoData, photoName) {
+            // You need to implement the server-side code to handle photo uploads.
+            // Here, we're just simulating a successful upload.
 
-        // Event listeners
+            // Simulate the upload process
+            setTimeout(function () {
+                alert("The photo has been uploaded successfully.");
+            }, 1000);
+        }
+
+        // Function to handle the "Upload Photo" button click
+        document.getElementById("upload-photo-button").addEventListener("click", function () {
+            var photoNameInput = document.getElementById("photo-name");
+            var photoName = photoNameInput.value.trim();
+            if (photoName === "") {
+                alert("Please enter a photo name.");
+                return;
+            }
+
+            var canvas = document.getElementById("photo-canvas");
+            var photoData = canvas.toDataURL("image/png");
+
+            // Upload the photo
+            uploadPhoto(photoData, photoName);
+
+            // Clear the photo name input
+            photoNameInput.value = "";
+
+            // Hide the modal
+            var uploadModal = document.getElementById("upload-modal");
+            uploadModal.style.display = "none";
+        });
+
+        // Function to handle the "Download Today's Photos" button click
+        function downloadPhotos() {
+            // Get today's date
+            var today = new Date();
+
+            // Create a folder name with the format YYYYMMDD
+            var folderName = today.getFullYear().toString() +
+                             (today.getMonth() + 1).toString().padStart(2, '0') +
+                             today.getDate().toString().padStart(2, '0');
+
+            // Create a temporary anchor element to trigger the download
+            var downloadLink = document.createElement('a');
+            downloadLink.style.display = 'none';
+
+            // Append the anchor to the body
+            document.body.appendChild(downloadLink);
+
+            // Loop through the photos and trigger the download for each one
+            for (var i = 0; i < photoList.length; i++) {
+                // Create an anchor element for each photo
+                var photoLink = document.createElement('a');
+                photoLink.href = photoList[i];
+                photoLink.download = folderName + '/photo_' + (i + 1) + '.png';
+
+                // Append the photo link to the temporary anchor
+                downloadLink.appendChild(photoLink);
+
+                // Simulate a click on the photo link to trigger the download
+                photoLink.click();
+
+                // Remove the photo link from the temporary anchor
+                downloadLink.removeChild(photoLink);
+            }
+
+            // Remove the temporary anchor from the body
+            document.body.removeChild(downloadLink);
+        }
+
+        // Event listener for the "Take Photo" button click
         document.getElementById("take-photo-button").addEventListener("click", function () {
             // Show the video preview and allow the user to take a photo
             showVideoPreview();
