@@ -109,6 +109,10 @@
         .list-item:hover button {
             display: block;
         }
+
+        .selected {
+            border: 3px solid #f00;
+        }
     </style>
 </head>
 
@@ -127,9 +131,10 @@
                 </div>
             </div>
             <ul class="list" id="photos-list"></ul>
+            <div class="button" id="download-selected-button" style="display: none;">Download Selected</div>
+            <div class="button" id="download-today-photos-button">Download Today's Photos</div>
         </div>
         <footer>
-            <div class="button" id="download-today-photos-button">Download Today's Photos</div>
             <div class="button" id="download-all-photos-button">Download All Photos</div>
         </footer>
     </div>
@@ -141,6 +146,7 @@
 
         // Global variables
         var photoList = [];
+        var selectedPhotos = [];
 
         // Function to take a photo
         function takePhoto() {
@@ -238,6 +244,32 @@
 
                 photosList.appendChild(listItem);
             }
+
+            // Add click event listener to photos for selection
+            var photos = photosList.getElementsByTagName("li");
+            for (var i = 0; i < photos.length; i++) {
+                photos[i].addEventListener("click", function (index) {
+                    return function () {
+                        var photo = photos[index];
+                        photo.classList.toggle("selected");
+
+                        if (photo.classList.contains("selected")) {
+                            selectedPhotos.push(photoList[index]);
+                        } else {
+                            var selectedIndex = selectedPhotos.indexOf(photoList[index]);
+                            if (selectedIndex !== -1) {
+                                selectedPhotos.splice(selectedIndex, 1);
+                            }
+                        }
+
+                        if (selectedPhotos.length > 0) {
+                            document.getElementById("download-selected-button").style.display = "block";
+                        } else {
+                            document.getElementById("download-selected-button").style.display = "none";
+                        }
+                    };
+                }(i));
+            }
         }
 
         // Function to upload a photo
@@ -247,14 +279,8 @@
 
             // Simulate the upload process
             setTimeout(function () {
-                alert("The photo has been uploaded successfully.");
+                alert("The photo has been uploaded successfully with the name: " + photoName);
             }, 1000);
-        }
-
-        // Function to show the modal for uploading a photo
-        function showUploadModal() {
-            var uploadModal = document.getElementById("upload-modal");
-            uploadModal.style.display = "block";
         }
 
         // Function to handle the "Take Photo" button click
@@ -298,6 +324,27 @@
         document.getElementById("download-all-photos-button").addEventListener("click", function () {
             // Redirect to the download page
             window.location.href = "/download";
+        });
+
+        // Function to handle the "Download Selected" button click
+        document.getElementById("download-selected-button").addEventListener("click", function () {
+            if (selectedPhotos.length > 0) {
+                // You need to implement the server-side code to handle the download of selected photos.
+                // Here, we're just simulating the process by opening the selected photos in new tabs.
+
+                selectedPhotos.forEach(function (photoData) {
+                    var newTab = window.open();
+                    newTab.document.write("<html><body><img src='" + photoData + "' /></body></html>");
+                });
+
+                // Clear the selection
+                selectedPhotos = [];
+                document.getElementById("download-selected-button").style.display = "none";
+                var selectedPhotosElements = document.querySelectorAll(".selected");
+                selectedPhotosElements.forEach(function (photo) {
+                    photo.classList.remove("selected");
+                });
+            }
         });
     </script>
 </body>
