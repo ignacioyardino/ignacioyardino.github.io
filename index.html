@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+body {
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .header {
+    margin: 10px;
+  }
+  
+  .body {
+    margin: 10px;
+  }
+  
+  .footer {
+    margin: 10px;
+  }
+  
+  .button {
+    display: block;
+    width: 100%;
+    height: 40px;
+    background-color: #000;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  
+  .modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+  }
+  
+  .modal-content {
+    width: 300px;
+    height: 100px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 10px;
+  }
+  
+  .list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .list-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+  }
+  
+  .list-item img {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .list-item button {
+    display: block;
+    width: 100%;
+    height: 40px;
+    background-color: #000;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  </style>
+  </head>
+  <body>
+    <script>function takePhoto() {
+        // Get the camera
+        var camera = navigator.mediaDevices.getUserMedia({
+          video: true
+        });
+      
+        // Create a canvas element
+        var canvas = document.getElementById("photo-canvas");
+      
+        // Start the camera
+        camera.start(function() {
+          // Get the video stream
+          var videoStream = camera.getVideoTracks()[0];
+      
+          // Create a video element
+          var video = document.createElement("video");
+          video.srcObject = videoStream;
+          video.style.display = "block";
+          document.body.appendChild(video);
+      
+          // Wait for the video to load
+          video.onloadedmetadata = function() {
+            // Get the video width and height
+            var width = video.videoWidth;
+            var height = video.videoHeight;
+      
+            // Create a canvas element
+            var canvas = document.getElementById("photo-canvas");
+            canvas.width = width;
+            canvas.height = height;
+      
+            // Create a context
+            var ctx = canvas.getContext("2d");
+      
+            // Draw the video to the canvas
+            ctx.drawImage(video, 0, 0);
+      
+            // Get the image data
+            var imageData = ctx.getImageData(0, 0, width, height);
+      
+            // Save the image data to a file
+            var fileName = new Date().getTime() + ".png";
+            var file = new File([imageData.data], fileName);
+            file.saveAs(file);
+      
+            // Close the camera
+            camera.stop();
+          };
+        });
+      }
+      
+      function choosePhoto() {
+        // Open the file picker
+        var fileInput = document.getElementById("photo-input");
+        fileInput.click();
+      }
+      
+      function uploadPhoto() {
+        // Get the file input
+        var fileInput = document.getElementById("photo-input");
+      
+        // Get the file
+        var file = fileInput.files[0];
+      
+        // Get the file name
+        var fileName = file.name;
+      
+        // Get the file extension
+        var fileExtension = file.name.split(".")[1];
+      
+        // Check if the file is an image
+        if (!fileExtension.match(/jpg|jpeg|png/)) {
+          alert("El archivo no es una imagen.");
+          return;
+        }
+      
+        // Get the file size
+        var fileSize = file.size;
+      
+        // Check if the file is too large
+        if (fileSize > 1000000) {
+          alert("El archivo es demasiado grande.");
+          return;
+        }
+      
+        // Create a new file
+        var newFile = new File([file], fileName);
+      
+        // Save the file to the server
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/upload");
+        xhr.onload = function() {
+          if (xhr.status === 200) {
+            alert("La foto se ha subido correctamente.");
+          } else {
+            alert("Hubo un error al subir la foto.");
+          }
+        };
+        xhr.send(newFile);
+      }
+      
+      function downloadTodaysPhotos() {
+        // Get the today's date
+        var today = new Date();
+      
+        // Create a query string
+        var queryString = "?date=" + today.toISOString();
+      
+        // Redirect to the download page
+        window.location.href = "/download" + queryString;
+      }
+      
+      function downloadAllPhotos() {
+        // Redirect to the download page
+        window.location.href = "/download";
+      }
+      </script>
+  <div class="container">
+    <header>
+      <h1>Photo Uploader</h1>
+    </header>
+    <body>
+      <div class="button" id="take-photo-button">Take Photo</div>
+      <div class="button" id="choose-photo-button">Choose Photo</div>
+      <div class="modal" id="upload-modal">
+        <div class="modal-content">
+          <input type="text" id="photo-name" placeholder="Photo Name">
+          <button id="upload-photo-button">Upload Photo</button>
+        </div>
+      </div>
+      <div class="list" id="photos-list"></div>
+    </body>
+    <footer>
+      <div class="button" id="download-today-photos-button">Download Today's Photos</div>
+      <div class="button" id="download-all-photos-button">Download All Photos</div>
+    </footer>
+  </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  
+</body>
+</html>
