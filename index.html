@@ -1,3 +1,6 @@
+Mis disculpas por las confusiones anteriores. Aquí tienes el código completo del `index.html` con todas las etiquetas y llaves de cierre correctamente:
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -35,13 +38,21 @@
             display: block;
             width: 100%;
             height: 40px;
-            background-color: #000;
+            background-color: #4CAF50;
             color: #fff;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
             line-height: 40px;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .button:hover {
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         .modal {
@@ -91,13 +102,21 @@
             display: block;
             width: 100%;
             height: 40px;
-            background-color: #000;
+            background-color: #4CAF50;
             color: #fff;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
             line-height: 40px;
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .list-item button:hover {
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
@@ -108,18 +127,18 @@
             <h1>Photo Uploader</h1>
         </header>
         <div class="body">
-            <div class="button" id="choose-photo-button">Seleccionar foto</div>
+            <button class="button" id="choose-photo-button">Seleccionar foto</button>
             <input type="file" accept="image/*" id="photo-input" style="display: none;">
             <div class="modal" id="upload-modal">
                 <div class="modal-content">
                     <input type="text" id="photo-name" placeholder="Nombre de la foto">
-                    <button id="upload-photo-button">Subir foto</button>
+                    <button class="button" id="upload-photo-button">Subir foto</button>
                 </div>
             </div>
             <ul class="list" id="photos-list"></ul>
         </div>
         <footer>
-            <div class="button" id="download-today-photos-button" onclick="descargarFotosHoy()">Descargar fotos de hoy</div>
+            <button class="button" id="download-today-photos-button" onclick="descargarFotosHoy()">Descargar fotos de hoy</button>
             <div class="button" id="download-all-photos-button">Descargar todas las fotos</div>
         </footer>
     </div>
@@ -133,7 +152,9 @@
         var photoList = [];
 
         // Función para manejar el cambio de entrada de archivo
-        document.getElementById("photo-input").addEventListener("change", function (event) {
+        document.getElementById
+
+("photo-input").addEventListener("change", function (event) {
             var file = event.target.files[0];
             var fileReader = new FileReader();
 
@@ -247,3 +268,6 @@
 </body>
 
 </html>
+```
+
+Ahora debería estar completo y sin errores. Si tienes alguna otra duda o necesitas más ayuda, no dudes en decirme.
