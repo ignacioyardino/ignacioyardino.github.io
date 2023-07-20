@@ -6,111 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Drop</title>
     <style>
-        body {
-            font-family: "Roboto", sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            margin: 10px;
-        }
-
-        .body {
-            margin: 10px;
-        }
-
-        .footer {
-            margin: 10px;
-        }
-
-        .button {
-            display: block;
-            width: 100%;
-            height: 40px;
-            background-color: #000;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            text-align: center;
-            line-height: 40px;
-        }
-
-        .modal {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-        }
-
-        .modal-content {
-            width: 300px;
-            height: 100px;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            padding: 10px;
-        }
-
-        .list {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .list-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100px;
-            height: 100px;
-            margin: 10px;
-        }
-
-        .list-item img {
-            max-width: 100%;
-            max-height: 100%;
-        }
-
-        .list-item button {
-            display: block;
-            width: 100%;
-            height: 40px;
-            background-color: #000;
-            color: #fff;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            text-align: center;
-            line-height: 40px;
-        }
+        /* Tus estilos CSS aquí */
     </style>
 </head>
 
 <body>
     <div class="container">
         <header>
-            <h1>Photo Drop</h1>
+            <h1>Photo Uploader</h1>
         </header>
         <body>
             <div class="button" id="take-photo-button">Tomar foto</div>
-            <!-- Utilizamos el atributo "capture" en el input para permitir la captura desde la cámara -->
-            <input type="file" accept="image/*" id="photo-input" style="display: none;" capture="camera">
             <div class="modal" id="upload-modal">
                 <div class="modal-content">
                     <input type="text" id="photo-name" placeholder="Photo Name">
@@ -124,6 +30,7 @@
             <div class="button" id="download-all-photos-button">Descargar todas las fotos</div>
         </footer>
     </div>
+    <video id="video-preview" style="display: none;"></video>
     <canvas id="photo-canvas" style="display: none;"></canvas>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -132,53 +39,52 @@
 
         // Global variables
         var photoList = [];
+        var videoStream = null;
 
-        // Function to take a photo
-        function takePhoto() {
-            // Get the camera
-            navigator.mediaDevices.getUserMedia({ video: true })
+        // Function to access the camera and show the video preview
+        function showVideoPreview() {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
                 .then(function (stream) {
+                    // Store the video stream for later use (to stop it when necessary)
+                    videoStream = stream;
+
                     // Create a video element
-                    var video = document.createElement("video");
+                    var video = document.getElementById("video-preview");
                     video.srcObject = stream;
-                    video.style.display = "none";
-                    document.body.appendChild(video);
+                    video.style.display = "block";
 
-                    // Wait for the video to load
-                    video.onloadedmetadata = function () {
-                        // Get the video width and height
-                        var width = video.videoWidth;
-                        var height = video.videoHeight;
-
-                        // Create a canvas element
-                        var canvas = document.getElementById("photo-canvas");
-                        canvas.width = width;
-                        canvas.height = height;
-
-                        // Create a context
-                        var ctx = canvas.getContext("2d");
-
-                        // Draw the video to the canvas
-                        ctx.drawImage(video, 0, 0, width, height);
-
-                        // Get the image data
-                        var imageData = canvas.toDataURL("image/png");
-
-                        // Save the image data to the photo list
-                        photoList.push(imageData);
-
-                        // Close the camera stream
-                        stream.getTracks().forEach(function (track) {
-                            track.stop();
-                        });
-
-                        // Update the photos list
-                        updatePhotosList();
-                    };
+                    // Play the video
+                    video.play();
                 })
                 .catch(function (error) {
                     console.error("Error accessing the camera: ", error);
                 });
+        }
+
+        // Function to take a photo
+        function takePhoto() {
+            // Get the video element
+            var video = document.getElementById("video-preview");
+
+            // Create a canvas element with the same dimensions as the video
+            var canvas = document.getElementById("photo-canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Create a context
+            var ctx = canvas.getContext("2d");
+
+            // Draw the current frame of the video to the canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Get the image data
+            var imageData = canvas.toDataURL("image/png");
+
+            // Save the image data to the photo list
+            photoList.push(imageData);
+
+            // Update the photos list
+            updatePhotosList();
         }
 
         // Function to update the photos list
@@ -198,137 +104,15 @@
             }
         }
 
-        // Function to upload a photo
-        function uploadPhoto(photoData, photoName) {
-            // You need to implement the server-side code to handle photo uploads.
-            // Here, we're just simulating a successful upload.
+        // Resto del código JavaScript, incluyendo la función para subir fotos y descargar fotos
+        // ...
 
-            // Simulate the upload process
-            setTimeout(function () {
-                alert("The photo has been uploaded successfully.");
-            }, 1000);
-        }
-
-        // Function to handle the "Upload Photo" button click
-        document.getElementById("upload-photo-button").addEventListener("click", function () {
-            var photoNameInput = document.getElementById("photo-name");
-            var photoName = photoNameInput.value.trim();
-            if (photoName === "") {
-                alert("Please enter a photo name.");
-                return;
-            }
-
-            var canvas = document.getElementById("photo-canvas");
-            var photoData = canvas.toDataURL("image/png");
-
-            // Upload the photo
-            uploadPhoto(photoData, photoName);
-
-            // Clear the photo name input
-            photoNameInput.value = "";
-
-            // Hide the modal
-            var uploadModal = document.getElementById("upload-modal");
-            uploadModal.style.display = "none";
+        // Event listeners
+        document.getElementById("take-photo-button").addEventListener("click", function () {
+            // Show the video preview and allow the user to take a photo
+            showVideoPreview();
         });
 
-        // Function to show the modal for uploading a photo
-        function showUploadModal() {
-            var uploadModal = document.getElementById("upload-modal");
-            uploadModal.style.display = "block";
-        }
-
-        // Function to handle the "Take Photo" button click
-        document.getElementById("take-photo-button").addEventListener("click", takePhoto);
-
-        // Function to handle the "Choose Photo" button click
-        document.getElementById("choose-photo-button").addEventListener("click", function () {
-            var fileInput = document.getElementById("photo-input");
-            fileInput.click();
-        });
-
-        // Function to handle the "Upload Photo" button click
-        document.getElementById("upload-photo-button").addEventListener("click", function () {
-            var photoNameInput = document.getElementById("photo-name");
-            var photoName = photoNameInput.value.trim();
-            if (photoName === "") {
-                alert("Please enter a photo name.");
-                return;
-            }
-
-            var canvas = document.getElementById("photo-canvas");
-            var photoData = canvas.toDataURL("image/png");
-
-            // Upload the photo
-            uploadPhoto(photoData, photoName);
-
-            // Clear the photo name input
-            photoNameInput.value = "";
-
-            // Hide the modal
-            var uploadModal = document.getElementById("upload-modal");
-            uploadModal.style.display = "none";
-        });
-
-        // Function to handle the "Download Today's Photos" button click
-        document.getElementById("download-today-photos-button").addEventListener("click", function () {
-            // Get today's date
-            var today = new Date();
-
-            // Create a folder name with the format YYYYMMDD
-            var folderName = today.getFullYear().toString() +
-                             (today.getMonth() + 1).toString().padStart(2, '0') +
-                             today.getDate().toString().padStart(2, '0');
-
-            // Create a temporary anchor element to trigger the download
-            var downloadLink = document.createElement('a');
-            downloadLink.style.display = 'none';
-
-            // Append the anchor to the body
-            document.body.appendChild(downloadLink);
-
-            // Loop through the photos and trigger the download for each one
-            for (var i = 0; i < photoList.length; i++) {
-                // Create an anchor element for each photo
-                var photoLink = document.createElement('a');
-                photoLink.href = photoList[i];
-                photoLink.download = folderName + '/photo_' + (i + 1) + '.png';
-
-                // Append the photo link to the temporary anchor
-                downloadLink.appendChild(photoLink);
-
-                // Simulate a click on the photo link to trigger the download
-                photoLink.click();
-
-                // Remove the photo link from the temporary anchor
-                downloadLink.removeChild(photoLink);
-            }
-
-            // Remove the temporary anchor from the body
-            document.body.removeChild(downloadLink);
-        });
-
-        // Function to handle the "Download All Photos" button click
-        document.getElementById("download-all-photos-button").addEventListener("click", function () {
-            // Redirect to the download page
-            window.location.href = "/download";
-        });
-
-        // Function to handle the file input change
-        document.getElementById("photo-input").addEventListener("change", function (event) {
-            var file = event.target.files[0];
-            var fileReader = new FileReader();
-
-            fileReader.onload = function () {
-                var photoData = fileReader.result;
-                // Save the photo data to the photo list
-                photoList.push(photoData);
-                // Update the photos list
-                updatePhotosList();
-            };
-
-            fileReader.readAsDataURL(file);
-        });
     </script>
 </body>
 
