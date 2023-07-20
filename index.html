@@ -4,36 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Photo Drop</title>
+    <title>Envío Móvil-PC</title>
     <style>
         body {
             font-family: "Roboto", sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
 
         .container {
+            position: relative;
             width: 100%;
-            height: 100%;
+            max-width: 800px;
+            flex: 1;
             display: flex;
             flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid transparent;
         }
 
         header {
             margin: 10px;
+            text-transform: uppercase;
         }
 
         .body {
             margin: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
         }
 
         footer {
-            margin: 10px;
+            background-color: #333;
+            color: #f0f0f0;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
         }
 
         .button {
             display: block;
-            width: 100%;
+            width: 200px;
             height: 40px;
             background-color: #4CAF50;
             color: #fff;
@@ -46,6 +65,7 @@
             border-radius: 20px;
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
             transition: box-shadow 0.3s ease;
+            margin: 10px;
         }
 
         .button:hover {
@@ -119,46 +139,135 @@
         .list-item:hover .delete-button {
             display: block;
         }
+
+        /* Estilos para el modo oscuro */
+        body.dark-mode {
+            background-color: #333;
+            color: #f0f0f0;
+        }
+
+        .container.dark-mode {
+            border: 1px solid #f0f0f0;
+            /* Agregamos el borde al activar el modo oscuro */
+        }
+
+        header.dark-mode {
+            background-color: #222;
+        }
+
+        .body.dark-mode {
+            background-color: #444;
+        }
+
+        footer.dark-mode {
+            background-color: #222;
+        }
+
+        .button.dark-mode {
+            background-color: #006400;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .button.dark-mode:hover {
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .modal.dark-mode {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content.dark-mode {
+            background-color: #444;
+            color: #f0f0f0;
+        }
+
+        .list-item.dark-mode {
+            border: 1px solid #f0f0f0;
+        }
+
+        .list-item img.dark-mode {
+            filter: invert(1);
+        }
+
+        .list-item .delete-button.dark-mode {
+            background-color: #8B0000;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .list-item .delete-button.dark-mode:hover {
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Estilos para el texto explicativo del footer */
+        .footer-text {
+            font-size: 12px;
+            color: #999;
+            margin: 10px;
+        }
+
+        /* Estilos para el Section */
+        section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            margin-top: 40px; /* Ajustamos el margen superior del section */
+        }
+
+        @media (max-width: 600px) {
+            /* Ajustar estilos para pantallas pequeñas */
+            .button {
+                width: 100%;
+            }
+
+            .modal-content {
+                width: 80%;
+            }
+
+            .list-item {
+                width: 80px;
+                height: 80px;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h1>Photo Uploader</h1>
-        </header>
+    <h1>Envío Móvil-PC</h1> <!-- Movemos el título arriba de todo -->
+    <div class="fixed-buttons">
+        <button class="button" id="choose-photo-button">Seleccionar foto</button>
+        <input type="file" accept="image/*" id="photo-input" style="display: none;">
+        <button class="button" id="download-today-photos-button" onclick="descargarFotosHoy()">Descargar fotos de hoy</button>
+    </div>
+
+    <section class="container">
         <div class="body">
-            <button class="button" id="choose-photo-button">Seleccionar foto</button>
-            <input type="file" accept="image/*" id="photo-input" style="display: none;">
             <div class="modal" id="upload-modal">
                 <div class="modal-content">
-                    <input type="text" id="photo-name" placeholder="Nombre de la foto">
                     <button class="button" id="upload-photo-button">Subir foto</button>
                 </div>
             </div>
             <ul class="list" id="photos-list"></ul>
         </div>
         <footer>
-            <button class="button" id="download-today-photos-button" onclick="descargarFotosHoy()">Descargar fotos de hoy</button>
-            <div class="button" id="download-all-photos-button">Descargar todas las fotos</div>
+            <div class="footer-text">Sube y descarga tus fotos fácilmente.</div>
         </footer>
-    </div>
+    </section>
+
     <canvas id="photo-canvas" style="display: none;"></canvas>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         // JavaScript para cargar y descargar fotos
-
         // Variables globales
         var photoList = [];
 
         // Función para manejar el cambio de entrada de archivo
         document.getElementById("photo-input").addEventListener("change", function (event) {
             var files = event.target.files;
-            var fileReader;
-
             for (var i = 0; i < files.length; i++) {
-                fileReader = new FileReader();
+                var fileReader = new FileReader();
 
                 fileReader.onload = function () {
                     var photoData = fileReader.result;
@@ -205,7 +314,7 @@
         }
 
         // Función para subir una foto
-        function subirFoto(photoData, photoName) {
+        function subirFoto(photoData) {
             // Aquí deberías implementar el código en el servidor para manejar la subida de fotos.
             // En este ejemplo, simulamos una subida exitosa.
 
@@ -217,21 +326,11 @@
 
         // Función para manejar el clic del botón "Subir foto"
         document.getElementById("upload-photo-button").addEventListener("click", function () {
-            var photoNameInput = document.getElementById("photo-name");
-            var photoName = photoNameInput.value.trim();
-            if (photoName === "") {
-                alert("Por favor, ingresa un nombre para la foto.");
-                return;
-            }
-
             var canvas = document.getElementById("photo-canvas");
             var photoData = canvas.toDataURL("image/png");
 
             // Subir la foto
-            subirFoto(photoData, photoName);
-
-            // Limpiar el campo del nombre de la foto
-            photoNameInput.value = "";
+            subirFoto(photoData);
 
             // Ocultar el modal
             var uploadModal = document.getElementById("upload-modal");
@@ -280,6 +379,17 @@
         document.getElementById("choose-photo-button").addEventListener("click", function () {
             var fileInput = document.getElementById("photo-input");
             fileInput.click();
+        });
+
+        // Evento para el cambio del modo oscuro
+        document.getElementById("dark-mode-toggle").addEventListener("change", function () {
+            document.body.classList.toggle("dark-mode");
+            document.querySelectorAll(".container, header, .body, footer, .button, .modal-content, .list-item img, .list-item .delete-button").forEach(function (element) {
+                element.classList.toggle("dark-mode");
+            });
+            document.querySelectorAll(".dark-mode-label").forEach(function (label) {
+                label.classList.toggle("dark-mode");
+            });
         });
 
     </script>
