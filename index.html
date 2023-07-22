@@ -45,9 +45,9 @@
         footer {
             background-color: #333;
             color: #f0f0f0;
-            width: 100%;
             padding: 20px 0;
             text-align: center;
+            width: 100%;
         }
 
         .button {
@@ -140,71 +140,6 @@
             display: block;
         }
 
-        /* Estilos para el modo oscuro */
-        body.dark-mode {
-            background-color: #333;
-            color: #f0f0f0;
-        }
-
-        .container.dark-mode {
-            border: 1px solid #f0f0f0;
-            /* Agregamos el borde al activar el modo oscuro */
-        }
-
-        header.dark-mode {
-            background-color: #222;
-        }
-
-        .body.dark-mode {
-            background-color: #444;
-        }
-
-        footer.dark-mode {
-            background-color: #222;
-        }
-
-        .button.dark-mode {
-            background-color: #006400;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.7);
-        }
-
-        .button.dark-mode:hover {
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.7);
-        }
-
-        .modal.dark-mode {
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content.dark-mode {
-            background-color: #444;
-            color: #f0f0f0;
-        }
-
-        .list-item.dark-mode {
-            border: 1px solid #f0f0f0;
-        }
-
-        .list-item img.dark-mode {
-            filter: invert(1);
-        }
-
-        .list-item .delete-button.dark-mode {
-            background-color: #8B0000;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.7);
-        }
-
-        .list-item .delete-button.dark-mode:hover {
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.7);
-        }
-
-        /* Estilos para el texto explicativo del footer */
-        .footer-text {
-            font-size: 12px;
-            color: #999;
-            margin: 10px;
-        }
-
         /* Estilos para el Section */
         section {
             display: flex;
@@ -212,7 +147,7 @@
             align-items: center;
             justify-content: center;
             flex: 1;
-            margin-top: 40px; /* Ajustamos el margen superior del section */
+            margin-top: 40px;
         }
 
         @media (max-width: 600px) {
@@ -229,16 +164,22 @@
                 width: 80px;
                 height: 80px;
             }
+
+            /* Cambiamos los estilos del footer para que ocupe todo el ancho en dispositivos móviles */
+            footer {
+                position: relative;
+                width: 100%;
+            }
         }
     </style>
 </head>
 
 <body>
-    <h1>Envío Móvil-PC</h1> <!-- Movemos el título arriba de todo -->
+    <h1>Envío Móvil-PC</h1>
     <div class="fixed-buttons">
         <button class="button" id="choose-photo-button">Seleccionar foto</button>
         <input type="file" accept="image/*" id="photo-input" style="display: none;">
-        <button class="button" id="download-today-photos-button" onclick="descargarFotosHoy()">Descargar fotos de hoy</button>
+        <button class="button" id="download-today-photos-button">Descargar fotos de hoy</button>
     </div>
 
     <section class="container">
@@ -250,10 +191,11 @@
             </div>
             <ul class="list" id="photos-list"></ul>
         </div>
-        <footer>
-            <div class="footer-text">Sube y descarga tus fotos fácilmente.</div>
-        </footer>
     </section>
+
+    <footer>
+        <div class="footer-text">Sube y descarga tus fotos fácilmente.</div>
+    </footer>
 
     <canvas id="photo-canvas" style="display: none;"></canvas>
 
@@ -264,22 +206,28 @@
         var photoList = [];
 
         // Función para manejar el cambio de entrada de archivo
-        document.getElementById("photo-input").addEventListener("change", function (event) {
+        document.getElementById("photo-input").addEventListener("change", async function (event) {
             var files = event.target.files;
             for (var i = 0; i < files.length; i++) {
-                var fileReader = new FileReader();
-
-                fileReader.onload = function () {
-                    var photoData = fileReader.result;
-                    // Guardar los datos de la foto en la lista de fotos
-                    photoList.push(photoData);
-                    // Actualizar la lista de fotos
-                    actualizarListaFotos();
-                };
-
-                fileReader.readAsDataURL(files[i]);
+                var photoData = await readFileAsync(files[i]);
+                // Guardar los datos de la foto en la lista de fotos
+                photoList.push(photoData);
             }
+            // Actualizar la lista de fotos
+            actualizarListaFotos();
         });
+
+        // Función para leer un archivo de forma asincrónica y devolver una Promise con el resultado
+        function readFileAsync(file) {
+            return new Promise(function (resolve, reject) {
+                var fileReader = new FileReader();
+                fileReader.onload = function () {
+                    resolve(fileReader.result);
+                };
+                fileReader.onerror = reject;
+                fileReader.readAsDataURL(file);
+            });
+        }
 
         // Función para actualizar la lista de fotos
         function actualizarListaFotos() {
@@ -381,17 +329,10 @@
             fileInput.click();
         });
 
-        // Evento para el cambio del modo oscuro
-        document.getElementById("dark-mode-toggle").addEventListener("change", function () {
-            document.body.classList.toggle("dark-mode");
-            document.querySelectorAll(".container, header, .body, footer, .button, .modal-content, .list-item img, .list-item .delete-button").forEach(function (element) {
-                element.classList.toggle("dark-mode");
-            });
-            document.querySelectorAll(".dark-mode-label").forEach(function (label) {
-                label.classList.toggle("dark-mode");
-            });
+        // Evento para el clic del botón "Descargar fotos de hoy"
+        document.getElementById("download-today-photos-button").addEventListener("click", function () {
+            descargarFotosHoy();
         });
-
     </script>
 </body>
 
