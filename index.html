@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Envío Móvil-PC</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
             font-family: "Roboto", sans-serif;
@@ -70,6 +71,16 @@
 
         .button:hover {
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .button-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .button-icon i {
+            margin-right: 5px;
         }
 
         .modal {
@@ -151,24 +162,28 @@
             margin-top: 5px;
             text-align: center;
         }
-
-        /* Resto de estilos y media queries aquí... */
     </style>
 </head>
 
 <body>
     <h1>Envío Móvil-PC</h1>
     <div class="fixed-buttons">
-        <button class="button" id="choose-photo-button">Seleccionar foto</button>
+        <button class="button button-icon" id="choose-photo-button">
+            <i class="fas fa-upload"></i> Subir archivos
+        </button>
         <input type="file" accept="image/*" id="photo-input" style="display: none;">
-        <button class="button" id="download-today-photos-button" onclick="descargarFotosHoy()">Descargar fotos de hoy</button>
+        <button class="button button-icon" id="download-today-photos-button" onclick="descargarFotosHoy()">
+            <i class="fas fa-download"></i> Descargar fotos
+        </button>
     </div>
 
     <section class="container">
         <div class="body">
             <div class="modal" id="upload-modal">
                 <div class="modal-content">
-                    <button class="button" id="upload-photo-button">Subir foto</button>
+                    <button class="button button-icon" id="upload-photo-button">
+                        <i class="fas fa-cloud-upload-alt"></i> Subir foto
+                    </button>
                     <input type="text" class="file-name-input" placeholder="Nombre del archivo">
                 </div>
             </div>
