@@ -172,10 +172,16 @@
             position: absolute;
             top: 5px;
             right: 5px;
+            /* Estilos para la "X" roja */
+            color: #FF0000;
+            font-size: 20px;
+            transform: scale(1);
+            transition: transform 0.3s, color 0.3s;
         }
 
         .list-item:hover .delete-button {
-            color: #FF0000;
+            transform: scale(1.1);
+            color: #FF3333;
         }
 
         .list-item .file-name-input {
