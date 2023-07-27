@@ -7,6 +7,7 @@
     <title>Envío Móvil-PC</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        /* Estilos generales */
         body {
             font-family: "Roboto", sans-serif;
             margin: 0;
@@ -51,6 +52,33 @@
             width: 100%;
         }
 
+        /* Estilos específicos para dispositivos móviles */
+        @media only screen and (max-width: 600px) {
+            .list-item {
+                width: 80px;
+                height: 80px;
+            }
+
+            .list-item img {
+                max-width: 80px;
+                max-height: 80px;
+            }
+
+            .list-item .delete-button {
+                width: 20px;
+                height: 20px;
+                font-size: 12px;
+                line-height: 20px;
+                top: 3px;
+                right: 3px;
+            }
+
+            .list-item .file-name-input {
+                font-size: 12px;
+            }
+        }
+
+        /* Resto del CSS */
         .button {
             display: block;
             width: 200px;
@@ -202,10 +230,6 @@
     <canvas id="photo-canvas" style="display: none;"></canvas>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script>
-        // JavaScript completo con todas las funcionalidades aquí...
-
-    </script>
 
     <script>
         // JavaScript para cargar y descargar fotos
