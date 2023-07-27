@@ -122,8 +122,6 @@
             height: 120px;
             margin: 10px;
             overflow: hidden;
-            /* Nueva adición para alinear el botón en la esquina superior derecha */
-            position: relative;
         }
 
         .list-item img {
@@ -133,40 +131,31 @@
         }
 
         .list-item .delete-button {
-            /* Nuevos estilos para el botón de borrar */
-            width: 30px;
-            height: 30px;
-            background-color: #FF0000;
-            color: #fff;
-            font-size: 14px;
+            width: 24px;
+            height: 24px;
+            color: #FF0000;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
-            line-height: 30px;
+            line-height: 24px;
             border: none;
             border-radius: 50%;
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
             transition: box-shadow 0.3s ease;
             display: none;
-            /* Nueva posición para el botón */
             position: absolute;
             top: 5px;
             right: 5px;
-            /* Para que el botón no esté dentro del contenedor de la imagen */
-            z-index: 1;
-        }
-
-        /* Asegurar que la "X" esté centrada en el botón de borrar */
-        .list-item .delete-button::before {
-            content: "×"; /* Código Unicode para "X" */
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
         }
 
         .list-item:hover .delete-button {
             display: block;
+        }
+
+        .list-item .delete-button:hover {
+            background-color: #FF0000;
+            color: #fff;
         }
 
         .list-item .file-name-input {
