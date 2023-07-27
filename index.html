@@ -161,29 +161,21 @@
         .list-item .delete-button {
             width: 24px;
             height: 24px;
-            color: #FF0000;
+            color: #000;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
             line-height: 24px;
             border: none;
-            border-radius: 50%;
-            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
-            transition: box-shadow 0.3s ease;
-            display: none;
+            background-color: transparent;
             position: absolute;
             top: 5px;
             right: 5px;
         }
 
         .list-item:hover .delete-button {
-            display: block;
-        }
-
-        .list-item .delete-button:hover {
-            background-color: #FF0000;
-            color: #fff;
+            color: #FF0000;
         }
 
         .list-item .file-name-input {
@@ -230,7 +222,6 @@
     <canvas id="photo-canvas" style="display: none;"></canvas>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
     <script>
         // JavaScript para cargar y descargar fotos
         // Variables globales
