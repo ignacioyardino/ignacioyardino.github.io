@@ -40,7 +40,7 @@
             margin: 10px;
             display: flex;
             flex-wrap: wrap;
-            justify-content: center; /* Modificado para centrar las imágenes en dispositivos móviles */
+            justify-content: flex-start;
         }
 
         footer {
@@ -77,7 +77,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            white-space: nowrap; /* Evita que el texto se desborde en dispositivos móviles */
         }
 
         .button-icon i {
@@ -132,15 +131,16 @@
         }
 
         .list-item .delete-button {
-            width: 24px;
-            height: 24px;
+            /* Nuevos estilos para el botón de borrar */
+            width: 30px;
+            height: 30px;
             background-color: #FF0000;
             color: #fff;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             text-align: center;
-            line-height: 24px;
+            line-height: 30px;
             border: none;
             border-radius: 50%;
             box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
@@ -162,31 +162,6 @@
             box-sizing: border-box;
             margin-top: 5px;
             text-align: center;
-        }
-
-        /* Estilos para dispositivos móviles */
-        @media (max-width: 768px) {
-            .body {
-                justify-content: center; /* Centrar las imágenes en dispositivos móviles */
-            }
-
-            .button {
-                width: 150px;
-            }
-
-            .list-item {
-                width: 100%; /* Las imágenes ocupan todo el ancho en dispositivos móviles */
-                max-width: 250px; /* Limita el ancho máximo para evitar que se vean muy grandes */
-            }
-
-            .modal-content {
-                width: 80%; /* Ajusta el ancho del modal para dispositivos móviles */
-                max-width: 250px; /* Limita el ancho máximo para evitar que ocupe toda la pantalla */
-            }
-
-            .button-icon {
-                white-space: nowrap; /* Evita que el texto se desborde en dispositivos móviles */
-            }
         }
     </style>
 </head>
