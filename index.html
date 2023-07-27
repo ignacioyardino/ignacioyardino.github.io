@@ -20,14 +20,15 @@
         }
 
         .container {
+            position: relative;
             width: 100%;
             max-width: 800px;
             flex: 1;
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
             border: 1px solid transparent;
-            padding: 20px;
         }
 
         header {
@@ -39,7 +40,7 @@
             margin: 10px;
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
+            justify-content: flex-start;
         }
 
         footer {
@@ -51,6 +52,7 @@
         }
 
         .button {
+            display: block;
             width: 200px;
             height: 40px;
             background-color: #4CAF50;
@@ -108,15 +110,16 @@
             padding: 0;
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
         }
 
         .list-item {
             position: relative;
             display: flex;
+            align-items: center;
+            justify-content: center;
             flex-direction: column;
-            width: 150px;
-            height: 150px;
+            width: 120px;
+            height: 120px;
             margin: 10px;
             overflow: hidden;
         }
@@ -160,54 +163,34 @@
             text-align: center;
         }
 
-        .fixed-buttons {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 600px;
-            margin-top: 10px;
-        }
+        /* Estilos para dispositivos móviles */
+        @media (max-width: 768px) {
+            .list-item {
+                width: 100%;
+                max-width: 300px;
+            }
 
-        .upload-btn-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
+            .modal-content {
+                width: 80%;
+                max-width: 300px;
+            }
 
-        .upload-btn-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-        }
+            .button {
+                width: 150px;
+            }
 
-        .upload-btn-wrapper .btn {
-            border: 2px solid #4CAF50;
-            color: white;
-            background-color: #4CAF50;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-            display: inline-block;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
+            .file-name-input {
+                width: 100%;
+            }
 
-        .upload-btn-wrapper .btn:hover {
-            background-color: #45a049;
-        }
-
-        .download-btn {
-            border: 2px solid #008CBA;
-            color: white;
-            background-color: #008CBA;
-        }
-
-        .download-btn:hover {
-            background-color: #007A8A;
+            .list-item .delete-button {
+                width: 20px;
+                height: 20px;
+                line-height: 20px;
+                font-size: 14px;
+                top: 2px;
+                right: 2px;
+            }
         }
     </style>
 </head>
@@ -215,13 +198,11 @@
 <body>
     <h1>Envío Móvil-PC</h1>
     <div class="fixed-buttons">
-        <div class="upload-btn-wrapper">
-            <button class="button button-icon btn">
-                <i class="fas fa-upload"></i> Subir archivos
-            </button>
-            <input type="file" accept="image/*">
-        </div>
-        <button class="button button-icon download-btn" onclick="descargarFotosHoy()">
+        <button class="button button-icon" id="choose-photo-button">
+            <i class="fas fa-upload"></i> Subir archivos
+        </button>
+        <input type="file" accept="image/*" id="photo-input" style="display: none;">
+        <button class="button button-icon" id="download-today-photos-button" onclick="descargarFotosHoy()">
             <i class="fas fa-download"></i> Descargar fotos
         </button>
     </div>
@@ -248,6 +229,8 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+        // Aquí va tu código JavaScript para manejar las interacciones y funcionalidades de la página.
+    </script>
         // JavaScript completo con todas las funcionalidades aquí...
 
     </script>
@@ -258,7 +241,7 @@
         var photoList = [];
 
         // Función para manejar el cambio de entrada de archivo
-        document.querySelector(".upload-btn-wrapper input[type=file]").addEventListener("change", function (event) {
+        document.getElementById("photo-input").addEventListener("change", function (event) {
             var files = event.target.files;
             for (var i = 0; i < files.length; i++) {
                 var fileReader = new FileReader();
@@ -387,6 +370,12 @@
             // Eliminar el anclaje temporal del cuerpo del documento
             document.body.removeChild(downloadLink);
         }
+
+        // Evento para el clic del botón "Seleccionar foto"
+        document.getElementById("choose-photo-button").addEventListener("click", function () {
+            var fileInput = document.getElementById("photo-input");
+            fileInput.click();
+        });
     </script>
 </body>
 
